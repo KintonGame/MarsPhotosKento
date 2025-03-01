@@ -9,18 +9,20 @@ import com.example.marsphotoskento.network.MarsApi
 import kotlinx.coroutines.launch
 
 class MarsViewModel : ViewModel() {
-    var marsUiState: String by mutableStateOf("")
+    var marsUiState: MarsUiState by mutableStateOf(MarsUiState.Loading)
+        private set
 
     init {
         getMarsPhotos()
     }
 
-    fun getMarsPhotos() {
+    private fun getMarsPhotos() {
         viewModelScope.launch {
-            try {
+            marsUiState = try {
                 val listResult = MarsApi.retrofitService.getPhotos()
-                marsUiState = listResult
+                MarsUiState.Success(listResult)
             } catch (e: Exception) {
+                MarsUiState.Error
             }
         }
     }
